@@ -1,0 +1,15 @@
+extends ./baseof.pug
+
+block main 
+  h3.italic Categories
+  each post in collections.all
+    h5= post.title
+
+
+block sidebar
+  #categories.d-flex.flex-column
+    // {{ partial "list_categories" . }}
+    include partials/list_categories.ace
+  br 
+  #tags.d-flex.flex-column
+    //{{ partial "tags" . }}

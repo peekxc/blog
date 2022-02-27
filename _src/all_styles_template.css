@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* pre {
+  padding: 0.50em !important;
+  border: 0.75px gray !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+}
+code {
+  padding: 0 !important;
+} */

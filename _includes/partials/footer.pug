@@ -1,0 +1,10 @@
+footer.fixed.text-center.bottom-0.bg-gray-100.border.w-full
+  span &copy; Copyright Matt Piekenbrock 2022. Proudly powered by 
+  a(href='https://www.11ty.dev/') Eleventy.
+  script. 
+    $(document).ready(function() {
+      $("[data-link]").click(function() {
+        window.location.href = $(this).attr("data-link");
+        return false;
+      });
+    });

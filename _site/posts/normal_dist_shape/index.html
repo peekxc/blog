@@ -1,0 +1,239 @@
+<html lang="en-US"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta http-equiv="X-UA-Compatible" content="IE=Edge"/><title>Blog title</title><link type="text/css" href="/css/styles.css" rel="stylesheet"/><link type="text/css" href="/css/fontawesome.min.css" rel="stylesheet"/></head><body class="w-full"><ul class="flex border-b mt-2 fixed-top mx-2"><a class="bg-white inline-block border-l border-t border-r rounded-t py-4 px-4 text-black font-semibold active_text-orange" id="home_tab" href="/content/index.html">Home</a><a class="bg-white inline-block border-l border-t border-r rounded-t py-4 px-4 text-black font-semibold active_text-orange" id="about_tab" href="/content/about">About</a><div class="mt-0 ml-auto relative box-border mb-4 w-5/12"><input class="bg-white border-l rounded border appearance-none leading-normal px-4 w-full h-full outline-none my-2" id="search_box" placeholder="Search..." type="search" name="search"/><button class="fa fa-search absolute right-0 top-0 mt-3 mr-2" aria-hidden="true"></button></div></ul><div class="mx-2 flex border mb-6"><div class="markdown container mx-8"><h1>Why is the normal distribution bell shaped?</h1><small class="text-gray">Tue Jan 31 2017 19:00:00 GMT-0500 (Eastern Standard Time) </small><div id="page_content"><p>Perhaps the most persistent, random pattern to appear in the universe itself is the normal distribution. The Normal distibution, also called the Gaussian distribution…</p>
+<pre><code class="language-cpp"><span class="hljs-function"><span class="hljs-keyword">double</span>* <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-keyword">double</span>* v1, <span class="hljs-keyword">double</span>* v2, <span class="hljs-keyword">int</span> n)</span></span>{
+  <span class="hljs-keyword">double</span>* res = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">double</span>)*n); 
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++){
+    res[i] = v1[i] + v2[i];
+  }
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>Seem reasonable? Maybe for parallel computing. It’s actually awful though.
+It’s up to the caller to deallocate memory manually, even though it’s unclear that memory was even dynamically allocated in the first place. Do we even need heap-allocated memory? A better solution is to rely on <code>std::vector</code>, whose deconstructor manages the memory for you (after the vector is returned and goes out of scope, it deconstructs). 2nd attempt:</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">using</span> <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>; 
+<span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; v1, <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; v2)</span></span>{
+  assert(v1.size() == v2.size());
+	<span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">res</span><span class="hljs-params">(v1.size())</span></span>; 
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; res.size(); i++){
+    res.at(i) = v1.at(i) + v2.at(i);
+  }
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>This is safer, much more STL-like,  and it removes the need for the extra argument. But there are still many things one could improve: for example, the vectors above were passed by-value, which requires two vector copies. Instead should pass them by reference with the ampersand operator ‘&amp;’:</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">using</span> <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>; 
+<span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt;&amp; v1, <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt;&amp; v2)</span></span>{
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">res</span><span class="hljs-params">(v1.size())</span></span>; 
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; res.size(); i++){
+    res.at(i) = v1.at(i) + v2.at(i);
+  }
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>Actually, the vectors are not modified, so they ought to be const to encourage the compiler to put them in some kind of read-only memory:</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">using</span> <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>; 
+<span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v1, <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v2)</span></span>{
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">res</span><span class="hljs-params">(v1.size())</span></span>; 
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; res.size(); i++){
+    res.at(i) = v1.at(i) + v2.at(i);
+  }
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>It’s considered poor practice to use ‘int’s as loop counters, since that’s a signed type, and it limits how big your vectors can be. Much better is the std::size_t type.
+It’s portable, more semantically clear, more secure, and most importantly guarenteed by the standard to be big enough for any container. Additionally, as an unsigned type, no bits are wasted (in the int case, the sign bit is meaningless).</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">using</span> <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>; 
+<span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v1, <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v2)</span></span>{
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">res</span><span class="hljs-params">(v1.size())</span></span>; 
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">size_t</span> i = <span class="hljs-number">0</span>; i &lt; res.size(); i++){
+    res.at(i) = v1.at(i) + v2.at(i);
+  }
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>The “.at()” access method for vectors does bound-checking, which amount to three function calls every loop iteration (!!). Better to check once and do a straight indexing:</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">using</span> <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>; 
+<span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v1, <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v2)</span></span>{
+  assert(v1.size() == v2.size());
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">res</span><span class="hljs-params">(v1.size())</span></span>; 
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">size_t</span> i = <span class="hljs-number">0</span>; i &lt; res.size(); i++){
+    res[i] = v1[i] + v2[i];
+  }
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>Believe it or not, incrementing via i++ used to generate one more instruction than ++i. The former makes a copy and then increments, whereas the latter just returns the final value. See answer #3 of <a href="https://stackoverflow.com/questions/24886/is-there-a-performance-difference-between-i-and-i-in-c">https://stackoverflow.com/questions/24886/is-there-a-performance-difference-between-i-and-i-in-c</a>.
+Also, the ‘.size()’ is a function call. Notice it gets called in the conditional every iteration. Better to use a const size_t to store the vector size to encourage getting put into a register.</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">using</span> <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>; 
+<span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v1, <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v2)</span></span>{
+  <span class="hljs-keyword">const</span> <span class="hljs-keyword">size_t</span> n = v1.size(); 
+  assert(n == v2.size());
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">res</span><span class="hljs-params">(n)</span></span>; 
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">size_t</span> i = <span class="hljs-number">0</span>; i &lt; n; ++i){
+    res[i] = v1[i] + v2[i];
+  }
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>Actually, why even use a counter variable at all? Vectors are guaranteed by the standard to be contiguous. Which means we can just iterate through them via random_access_iterators (which are just incrementeable-pointers to the vectors memory)</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">using</span> <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>; 
+<span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v1, <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-keyword">const</span> &amp; v2)</span></span>{
+  assert(v1.size() == v2.size());
+  <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt;::const_iterator it1 = v1.begin(); 
+  <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt;::const_iterator it2 = v2.begin(); 
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; <span class="hljs-title">res</span><span class="hljs-params">(n)</span></span>;
+  <span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt;::iterator out = res.begin(); 
+  <span class="hljs-keyword">while</span>(it1 != v1.end()){
+    *out = *it1 + *it2;
+    ++out; ++it1; ++it2; 
+  }   
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>But that only works for doubles. And maybe your boss wants your to use accept multiple numeric types. So you can copy+paste the function to work with floats and doubles. But then what if someone has their own fancy floating point type? There are many integer types (see <a href="https://en.cppreference.com/w/cpp/language/types#Integer_types">https://en.cppreference.com/w/cpp/language/types#Integer_types</a>). And fuck overloading all the possible floating point types.
+In modern C++, one can use type traits to assert at compile-time via ‘static_assert’ properties of the compile-type-deduced type ‘T’. See <a href="https://en.cppreference.com/w/cpp/types/is_floating_point">https://en.cppreference.com/w/cpp/types/is_floating_point</a>.</p>
+<p><a href="https://stackoverflow.com/questions/15433381/performance-of-piter-cont-end-in-for-loop">https://stackoverflow.com/questions/15433381/performance-of-piter-cont-end-in-for-loop</a></p>
+<pre><code class="language-cpp"><span class="hljs-keyword">using</span> <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>; 
+<span class="hljs-function"><span class="hljs-keyword">template</span>&lt; <span class="hljs-keyword">typename</span> T &gt;
+<span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-keyword">const</span> &amp; v1, <span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-keyword">const</span> &amp; v2)</span></span>{
+  <span class="hljs-keyword">static_assert</span>(is_floating_point&lt;T&gt;::value, <span class="hljs-string">&quot;Must be floating point&quot;</span>); 
+  assert(v1.size() == v2.size());
+  <span class="hljs-built_in">vector</span>&lt; T &gt;::const_iterator it1 = v1.begin(); 
+  <span class="hljs-built_in">vector</span>&lt; T &gt;::const_iterator it2 = v2.begin(); 
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-title">res</span><span class="hljs-params">(n)</span></span>;
+  <span class="hljs-built_in">vector</span>&lt; T &gt;::iterator out = res.begin(); 
+  <span class="hljs-keyword">while</span>(it1 != v1.end()){
+    *out = *it1 + *it2;
+    ++out; ++it1; ++it2; 
+  }   
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>Now we have one function that works for any floating point type. But it looks terrible. Can we use the standard library to simplify it without incurring any penalty from the optimized version we have?
+Sure can. See the C++ version of mapping: <a href="http://www.cplusplus.com/reference/algorithm/transform/">http://www.cplusplus.com/reference/algorithm/transform/</a></p>
+<pre><code class="language-cpp"><span class="hljs-function"><span class="hljs-keyword">template</span>&lt; <span class="hljs-keyword">typename</span> T &gt;
+<span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-keyword">const</span> <span class="hljs-built_in">vector</span>&lt; T &gt; &amp; v1, <span class="hljs-keyword">const</span> <span class="hljs-built_in">vector</span>&lt; T &gt; &amp; v2)</span></span>{
+  <span class="hljs-keyword">static_assert</span>(is_floating_point&lt;T&gt;::value, <span class="hljs-string">&quot;Must be floating point&quot;</span>); 
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-title">res</span><span class="hljs-params">(v1.size())</span></span>;
+  <span class="hljs-built_in">std</span>::transform(v1.begin(), v1.end(), v2.begin(), res.begin(), <span class="hljs-built_in">std</span>::plus&lt; T &gt;());
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>The second overload takes three input iterators, an output iterator, and a binary function (templated by the floating point template type), and applies the binary function pairwise to the two input iterators, saving the result to the iterator specified as the output (res). If you look at the equivalent code on the site, this is literally essentially equivalent to the on before, but much less code, and it’s just as efficient.
+… But this is still a function call. And from the first link, you saw how expensive setting up function calls can be. It would be better if this code were just copy+pasted everywhere it was called. Luckily you can do that (more-or-less) with inline:</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">using</span> <span class="hljs-built_in">std</span>::<span class="hljs-built_in">vector</span>; 
+<span class="hljs-function"><span class="hljs-keyword">template</span>&lt; <span class="hljs-keyword">typename</span> T &gt;
+<span class="hljs-keyword">inline</span> <span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-keyword">const</span> &amp; v1, <span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-keyword">const</span> &amp; v2)</span></span>{
+  <span class="hljs-keyword">static_assert</span>(is_floating_point&lt;T&gt;::value, <span class="hljs-string">&quot;Must be floating point&quot;</span>); 
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-title">res</span><span class="hljs-params">(v1.size())</span></span>;
+  <span class="hljs-built_in">std</span>::transform(v1.begin(), v1.end(), v2.begin(), res.begin(), <span class="hljs-built_in">std</span>::plus&lt; T &gt;());
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<p>We can follow the tradition of specifying preconditions (<a href="http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2015/p0147r0.html#WideNarrow">using narrow contracts</a>) to remove the
+assertion and instead declare that if two vectors are given, their sizes must match, otherwise this function produces undefined behavior.
+If we assume the preconditions are always met, the memory accessed should never cause a segmentation fault. That is, it shouldn’t throw any exceptions. So we can append noexcept to tell the compiler to hint that this should be a safe function.</p>
+<p><a href="https://stackoverflow.com/questions/7593086/why-use-non-member-begin-and-end-functions-in-c11">https://stackoverflow.com/questions/7593086/why-use-non-member-begin-and-end-functions-in-c11</a></p>
+<pre><code class="language-cpp"><span class="hljs-function"><span class="hljs-keyword">template</span>&lt; <span class="hljs-keyword">typename</span> T &gt;
+<span class="hljs-keyword">inline</span> <span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-title">add_vec</span><span class="hljs-params">(<span class="hljs-keyword">const</span> <span class="hljs-built_in">vector</span>&lt; T &gt; &amp; v1, <span class="hljs-keyword">const</span> <span class="hljs-built_in">vector</span>&lt; T &gt; &amp; v2)</span> </span>{
+  <span class="hljs-keyword">static_assert</span>(is_floating_point&lt;T&gt;::value, <span class="hljs-string">&quot;Must be floating point&quot;</span>); 
+  <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt; T &gt; <span class="hljs-title">res</span><span class="hljs-params">(v1.size())</span></span>;
+  transform(begin(v1), end(v1), begin(v2), begin(res), plus&lt; T &gt;());
+  <span class="hljs-keyword">return</span> res; 
+}
+</code></pre>
+<pre><code class="language-c++">template&lt; typename T &gt; [[nodiscard]] 
+auto add_vec(const vector&lt; T &gt; &amp; v1, const vector&lt; T &gt; &amp; v2) noexcept -&gt; vector&lt; T &gt;  {
+  static_assert(is_floating_point&lt;T&gt;::value, &quot;Must be floating point&quot;); 
+  vector&lt; T &gt; res; res.reserve(v1.size()); 
+  transform(begin(v1), end(v1), begin(v2), begin(res), plus&lt; T &gt;());
+  return res; 
+}
+</code></pre>
+<p>So this is pretty good, and it’s short. But now consider an example useage:</p>
+<pre><code class="language-cpp"><span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; v1 = { <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span> };
+<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; v2 = { <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span> };
+<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; v3 = { <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span> };
+<span class="hljs-built_in">vector</span>&lt; <span class="hljs-keyword">double</span> &gt; res = add_vec(v3, add_vec(`v1,v2));
+</code></pre>
+<p>Ehh…. each ‘add_vec’ allocates a new and returns it, so the last statement allocates two vectors. Currently, if you want to apply n vector additions, you need n vector allocations to happen; but if you replicated something like above function to add up not just two vectors, but n vectors, you could re-implement another function that takes some n vectors and only performs one vector allocation (for the result). How does one do that without making n special vector additions specializations?
+We could’ve done the easy solution in the beginning; enact side-effects by passing one by non-const reference and modifying it directly–no copies needed. But screw that, I want a pure function! Challenge to the mind.
+Now the final example solution: <a href="https://en.wikipedia.org/wiki/Expression_templates">https://en.wikipedia.org/wiki/Expression_templates</a>.
+See the paragraph starting with: “A problem with this approach is that more complicated expressions such as Vec x = a + b + c are implemented inefficiently. The implementation first produces a temporary vector to hold a + b, then produces another vector with the elements of c added in. Even with return value optimization this will allocate memory at least twice and require two loops.”
+The idea is to build the expression trees at compile-time to enable delayed evaluation and so-called “loop fusion.”
+Also, see the application section at the bottom for the (modern) linear algebra that use this kind of thing. Of course, the vector additions is just one example. Notice that sentence that expression templates are used for “i.e., for dealing with vectors and matrices of numbers”. So everything in scientific computing.
+This notion of building compile-time abstract syntax trees to represent complex expressions…. it’s not just some lisp-derived lambda calculus motivated scheme-function mumbo jumbo. It’s a movement that’s shaping the language which enables C++ programmers to create expressive, terse, functional code that is every drop as efficient as the hyper bit-trick optimized old-fortran versions were. But these tricks are general, composable, and are becoming increasingly simpler to implement. And, believe it or not, at the cutting edge of the libraries proposing additions the standard lies extensions inspired by things like category theory (monads are the primary example), algebra (posets are coming in c++20), etc. That is modern C++, and what is emerging with the newer standards.</p>
+</div></div></div><script src="/js/jquery.min.js"></script><script src="/js/postboot.min.js"></script><script src="/js/popper.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/elasticlunr.min.js"></script><script src="/js/lodash.min.js"></script><script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>document.addEventListener('DOMContentLoaded', (event) => {
+  document.querySelectorAll('pre code').forEach((block) => {
+    console.log("here");
+    hljs.highlightBlock(block);
+  });
+});</script><script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.js" integrity="sha256-2JRzNxMJiS0aHOJjG+liqsEOuBb6++9cY4dSOyiijX4=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad()		</script><script>const tabs = ["home_tab", "about_tab"];
+tabs.forEach((tab_id) => {
+	var tab_el = document.getElementById(tab_id)
+	console.log(window.location.pathname.replace("/", ""))
+	console.log(tab_el.pathname.replace("/", ""))
+	if (window.location.pathname == tab_el.pathname){
+		console.log("orange")
+		tab_el.classList.remove("text-black")
+		tab_el.classList.add("text-orange")
+	} else {
+		console.log("black")
+		tab_el.classList.remove("text-orange")
+		tab_el.classList.add("text-black")
+	}
+})	</script><script>var search_index, doc_keys;
+
+const apply_slugs = (slugs, display_status) => {
+	_.forEach(slugs, (id) => { if (id){ $("#"+id).css("display", display_status); } });
+};
+
+$.getJSON('/data/cached_index.json', function(data) {
+	search_index = elasticlunr.Index.load(data);
+	doc_keys = _.map(search_index.documentStore.docs, (doc) => {
+		return (doc.slug ? doc.slug : "");
+	});
+	console.log("Search index")
+	console.log(search_index);
+});
+
+
+const feed = $("#article_feed");
+const all_articles = $("#article_feed").children();
+//- const article_ids = _.map(all_articles, (article) => { 
+//- 	return article.id.replace(/-/g, "_")
+//- })	
+
+console.log("Articles: ")
+console.log(all_articles)
+
+$( "#search_box" ).keyup(function() {
+	var searchstring = $('#search_box');
+	searchstring.focus();
+	
+	console.log(searchstring.val())
+
+	// If query empty, default to listing all the articles
+	if (searchstring.val().trim() == ""){
+		if (feed.children().length != all_articles.length){
+			feed.children().detach()
+			feed.append(all_articles);
+		}
+	} else {
+		var res = search_index.search(searchstring.val(), {});
+		const found_slugs = _.map(res, (doc) => { return doc.ref; });
+		console.log(found_slugs)
+		const ordered_articles = _.map(found_slugs, (slug) => {
+			return _.find(all_articles, (article) => { return article.id.replace(/-/g, "_") == slug.replace(/-/g, "_") });
+		});
+		feed.children().detach()
+		_.forEach(ordered_articles, (arr) => {
+			feed.append(arr);
+			feed.append(document.createElement("br"))
+		});
+	}
+});</script></body><footer class="fixed text-center bottom-0 bg-gray-100 border w-full"><span>&copy; Copyright Matt Piekenbrock 2020. Proudly powered by a mix of&nbsp;</span><a href="https://rmarkdown.rstudio.com/">rmarkdown </a><span>and&nbsp;</span><a href="https://www.11ty.dev/">Eleventy</a><script>$(document).ready(function() {
+	$("[data-link]").click(function() {
+		window.location.href = $(this).attr("data-link");
+		return false;
+	});
+});</script></footer></html>

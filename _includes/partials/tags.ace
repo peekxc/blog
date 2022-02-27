@@ -1,0 +1,10 @@
+a.h3.py-1 href="/tags"  Tags 
+  .d-flex.flex-row.justify-content-start.align-items-center#all-tags style="flex-shrink: 0; flex-flow: row wrap;"
+    {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
+      {{ $tag_link := (printf "/tags/%s" $name) }}
+      {{ $tag_count := (len $taxonomy.Pages) }}
+      h5 
+        a.badge.badge-secondary.m-1 href="{{ $tag_link }}" 
+          {{ $name }} {{ " " | safeHTML }}
+          span.badge.badge-light {{ $tag_count }}
+    {{ end }}

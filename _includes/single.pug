@@ -1,0 +1,24 @@
+extends ./baseof.pug
+
+block main 
+	.markdown.container.px-16.items-center(class="w-full").max-w-screen-xl.mx-auto.prose.prose-pre_p-2.prose-pre_border-2
+		h1.my-4 #{ title }
+		small.text-orange.my-0 Author: 
+		small.text-gray.my-0 Matt Piekenbrock
+		br
+		small.text-orange.my-0 Date:
+		small.text-gray.my-0 
+			- date_text = (date.constructor.name == "Date" ? date.toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) : date)
+			//- - date_text = (date.constructor.name == "Date" ?  : date)
+			= date_text
+		#page_content.w-full 
+		!= content 
+		br
+
+block sidebar
+	//- {{ $page_content := ( printf "%s/%s.html" .File.Dir .File.BaseFileName ) | relURL }}
+	//- {{ with .Site.GetPage (printf "%s" $page_content) }}
+	//-   p {{ .TableOfContents }}
+	//-   {{ partial "scrollspy" . }}
+	//- {{ end }}
+	//- TODO: implement auotmated scrollspy https://github.com/jake-low/remark-sectionize/blob/master/index.js

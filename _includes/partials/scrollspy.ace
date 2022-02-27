@@ -1,0 +1,46 @@
+{{ $headers := findRE "<h[1-2].*?>(.|\n])+?</h[1-2]>" .Content }}
+{{ $has_headers := ge (len $headers) 1 }}
+/ {{ $show_toc := (eq $.Params.toc true) }}
+{{ $show_toc := true }}
+{{ if and $has_headers $show_toc }}
+  nav.navbar.navbar-light#page_toc.position-fixed.p-0
+    ul.nav.navbar-nav
+      h4.text-muted Navigation
+      {{ range $i, $header := $headers }}
+        {{ $headerLevel := index (findRE "[1-2]" . 1) 0 }}
+        {{ $headerLevel := len (seq $headerLevel) }}
+        {{ $anchorID := ($header | plainify | htmlEscape | urlize) }}
+        {{ if ne $i 0 }}
+          {{ $prevHeaderLevel := index (findRE "[1-2]" (index $headers (sub $i 1)) 1) 0 }}
+          {{ $prevHeaderLevel := len (seq $prevHeaderLevel) }}
+          {{ if gt $headerLevel $prevHeaderLevel }}
+            {{ range seq (sub $headerLevel $prevHeaderLevel) }}
+              | <ul class="nav navbar-nav">
+            {{ end }}
+          {{ end }}
+          {{ if lt $headerLevel $prevHeaderLevel }}
+            {{ range seq (sub $prevHeaderLevel $headerLevel) }}
+              | </li></ul></li>
+            {{ end }}
+          {{ end }}
+          {{ if eq $headerLevel $prevHeaderLevel }}
+            | </li>
+          {{ end }}
+          | <li class="nav-item show">
+          | <a class="nav-link" href="#{{$anchorID}}">{{ $header | plainify | htmlEscape }}</a>
+          {{ if eq $i (sub (len $headers) 1) }}
+            {{ range seq (sub $prevHeaderLevel $headerLevel) }}
+              | </li></ul></li>
+            {{ end }}
+          {{ end }}
+        {{ else }}
+        | <li class="nav-item show">
+        | <a class="nav-link" href="#{{$anchorID}}">{{ $header | plainify | htmlEscape }}</a>
+        {{ end }}
+      {{ end }}
+      {{ $firstHeaderLevel := len (seq (index (findRE "[1-2]" (index $headers 0) 1) 0)) }}
+      {{ $lastHeaderLevel := len (seq (index (findRE "[1-2]" (index $headers (sub (len $headers) 1)) 1) 0)) }}
+      {{ range seq (sub $lastHeaderLevel $firstHeaderLevel) }}
+        | </li></ul></li>
+    {{ end }}
+{{ end }}

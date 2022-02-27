@@ -1,0 +1,54 @@
+script.
+	var search_index, doc_keys;
+
+	const apply_slugs = (slugs, display_status) => {
+		_.forEach(slugs, (id) => { if (id){ $("#"+id).css("display", display_status); } });
+	};
+
+	$.getJSON('/data/cached_index.json', function(data) {
+		search_index = elasticlunr.Index.load(data);
+		doc_keys = _.map(search_index.documentStore.docs, (doc) => {
+			return (doc.slug ? doc.slug : "");
+		});
+		console.log("Search index")
+		console.log(search_index);
+	});
+	
+
+	const feed = $("#article_feed");
+	const all_articles = $("#article_feed").children();
+	//- const article_ids = _.map(all_articles, (article) => { 
+	//- 	return article.id.replace(/-/g, "_")
+	//- })	
+
+	console.log("Articles: ")
+	console.log(all_articles)
+
+	function update_search_box() {
+		var searchstring = $('#search_box');
+		searchstring.focus();
+		
+		console.log(searchstring.val())
+
+		// If query empty, default to listing all the articles
+		if (searchstring.val().trim() == ""){
+			if (feed.children().length != all_articles.length){
+				feed.children().detach()
+				feed.append(all_articles);
+			}
+		} else {
+			var res = search_index.search(searchstring.val(), {});
+			const found_slugs = _.map(res, (doc) => { return doc.ref; });
+			console.log(found_slugs)
+			const ordered_articles = _.map(found_slugs, (slug) => {
+				return _.find(all_articles, (article) => { return article.id.replace(/-/g, "_") == slug.replace(/-/g, "_") });
+			});
+			feed.children().detach()
+			_.forEach(ordered_articles, (arr) => {
+				feed.append(arr);
+				feed.append(document.createElement("br"))
+			});
+		}
+	}
+
+	$( "#search_box" ).keyup(update_search_box);

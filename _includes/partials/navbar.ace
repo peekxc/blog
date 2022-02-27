@@ -1,0 +1,36 @@
+nav.navbar.navbar-expand-lg.navbar-light.border-0.m-0.py-0.px-2.rounded-0 style="background-color: #ea8a57;"
+  a.navbar-brand.m-0.p-0 href="{{ .Site.BaseURL }}" 
+    img src="/title.svg" height=30
+nav.navbar.navbar-expand-lg.navbar-light.border-0.m-0.py-0.px-2.rounded-0 style="background-color: #ea8a57;"
+  button.navbar-toggler.center-text.my-2 type=button data-toggle=collapse data-target=#navbarMenu aria-controls=navbarMenu aria-expanded=false aria-label="Toggle navigation"
+    span.navbar-toggler-icon
+  #navbarMenu.collapse.navbar-collapse
+    ul.navbar-nav.mr-auto role=tablist
+      {{ $currentPage := . }}
+      // {{ .Name }}
+      // printf .Site.Menus.main
+      {{ range .Site.Menus.main }}
+        {{ $isActive := or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}
+        li.nav-item class="{{ if $isActive }}active{{ end }}"
+          a.nav-link href="{{ .URL }}" style="color: white; font-weight: bold;"
+            | {{ .Name }}
+      {{ end }}
+    .dropdown.m-0.p-0
+      span.fa.fa-font.fa-lg.btn.float-right.m-0.px-2 style="color: white;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+      .dropdown-menu aria-labelledby="dropdownMenuButton"
+        a.dropdown-item href="#" onclick="changeFont(0)" Inconsolata
+        a.dropdown-item href="#" onclick="changeFont(1)" Times New Roman
+        a.dropdown-item href="#" onclick="changeFont(2)" Montserrat
+    form.form-inline.pull-right.col-md-4.p-0.float-right.my-2
+      input#search_box.form-control type="search" placeholder="Type to filter posts..." aria-label="Search" style="width: 100%;"
+= javascript 
+  function changeFont(font_option) {
+		// TODO: get latin modern  https://people.eecs.berkeley.edu/~brock/blog/detection_idiom.php
+    const fonts = ["'Inconsolata', monospace", "Times New Roman", "Montserrat"]
+    if (font_option == 2){ 
+      $('head').append("<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'/>");
+    }
+    $('#page_content').css("font-family", fonts[font_option]);
+  };
+
+	

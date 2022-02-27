@@ -1,0 +1,45 @@
+extends ./baseof.pug
+
+block main 
+	#article_feed.items-center(class="w-3/4")
+		br
+		- collections.post.forEach(post => {
+		// - 	console.log(Object.keys(post))
+		// -	  console.log("post data: " + Object.keys(post.data))
+		-   if (post.url.includes("post") && !post.data.draft){
+					include ./partials/summary.pug
+		- 	}
+		- });
+
+block sidebar 
+	div(class="w-1/4").mx-4
+		h3.font-bold.text-lg.mt-4.mb-2 Categories
+		hr.my-4
+		#categories.inline-flex.flex-row.flex-wrap
+		- console.log('Categories')
+		- const categories = Object.keys(collections.categories)
+			each cat in categories  
+				span.bg-orange.px-2.py-1.mx-1.grow-0.flex-none.max-w-prose.text-white.border-0.font-semibold.cursor-pointer.hover_bg-gray-400.active_text-orange(id=`cat_${cat}` onClick="reply_click(this)")
+					= cat
+		br.my-8 
+		h3.font-bold.text-lg.mt-4.mb-2 Tags
+		hr.my-4
+		#tags.inline-flex.flex-row.flex-wrap 
+			- console.log('Tags')
+			- console.log(Object.keys(collections))
+			- const tags = Object.keys(collections)
+			each tag in tags 
+				button.bg-gray-400.rounded-sm.px-2.py-1.mx-2.my-1.text-white.text-sm.leading-normal.cursor-pointer(class="hover:bg-orange").hover_bg-orange
+					= tag
+		script.
+			function reply_click(button) {
+				button.focus();
+				// console.log(button);
+				$(button).toggleClass("bg-orange");
+				$(button).toggleClass("bg-gray-400");
+				document.getElementById("search_box").value = button.textContent;
+				update_search_box()
+				console.log($(`#cat_${button.textContent}`))
+				$(`#cat_${button.textContent}`).addClass('active');
+			}
+			//- {{ partial "tags" . }}

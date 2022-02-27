@@ -1,0 +1,77 @@
+<html lang="en-US"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta http-equiv="X-UA-Compatible" content="IE=Edge"/><link type="text/css" href="/css/styles.css" rel="stylesheet"/><link type="text/css" href="/css/fontawesome.min.css" rel="stylesheet"/><link rel="stylesheet" href="/css/github.min.css"/><link href="/css/prism-one-light.css" rel="stylesheet"/><link rel="stylesheet" href="https://unpkg.com/katex@latest/dist/katex.min.css"/><link href="https://fonts.googleapis.com/css?family=Nunito:400,700&amp;display=swap" rel="stylesheet"/></head><body class="w-full"><ul class="flex border-b mt-2 fixed-top mx-2"><a class="bg-white inline-block border-l border-t border-r rounded-t py-4 px-4 text-black font-semibold active_text-orange" id="home_tab" href="/">Home</a><a class="bg-white inline-block border-l border-t border-r rounded-t py-4 px-4 text-black font-semibold active_text-orange" id="about_tab" href="/about">About</a><div class="mt-0 ml-auto relative box-border mb-4 w-5/12"><input class="bg-white border-l rounded border appearance-none leading-normal pl-4 pr-8 w-full h-full outline-none my-2" id="search_box" placeholder="Search..." type="search" name="search"/><button class="fa fa-search absolute right-0 top-2 h-full my-2 mr-6" aria-hidden="true" style="align-middle"></button></div></ul><div class="mx-2 flex border mb-6 border-t-0"><div class="markdown container px-16 items-center w-full max-w-screen-xl mx-auto prose prose-pre_p-2 prose-pre_border-2"><h1 class="my-4">Objects are Functions and Functions are Objects</h1><small class="text-orange my-0">Author: </small><small class="text-gray my-0">Matt Piekenbrock</small><br/><small class="text-orange my-0">Date:</small><small class="text-gray my-0"> January 31, 2017</small><div class="w-full" id="page_content"> </div><br/></div></div><script src="/js/jquery.min.js"></script><script src="/js/elasticlunr.min.js"></script><script src="/js/lodash.min.js"></script><script>document.addEventListener('DOMContentLoaded', (event) => {
+  document.querySelectorAll('pre code').forEach((block) => {
+    console.log("here");
+    //hljs.highlightBlock(block);
+  });
+});</script><script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.js" integrity="sha256-2JRzNxMJiS0aHOJjG+liqsEOuBb6++9cY4dSOyiijX4=" crossorigin="anonymous"></script><script>const tabs = ["home_tab", "about_tab"];
+tabs.forEach((tab_id) => {
+	var tab_el = document.getElementById(tab_id)
+	console.log(window.location.pathname.replace("/", ""))
+	console.log(tab_el.pathname.replace("/", ""))
+	if (window.location.pathname == tab_el.pathname){
+		console.log("orange")
+		tab_el.classList.remove("text-black")
+		tab_el.classList.add("text-orange")
+	} else {
+		console.log("black")
+		tab_el.classList.remove("text-orange")
+		tab_el.classList.add("text-black")
+	}
+})</script><script>var search_index, doc_keys;
+
+const apply_slugs = (slugs, display_status) => {
+	_.forEach(slugs, (id) => { if (id){ $("#"+id).css("display", display_status); } });
+};
+
+$.getJSON('/data/cached_index.json', function(data) {
+	search_index = elasticlunr.Index.load(data);
+	doc_keys = _.map(search_index.documentStore.docs, (doc) => {
+		return (doc.slug ? doc.slug : "");
+	});
+	console.log("Search index")
+	console.log(search_index);
+});
+
+
+const feed = $("#article_feed");
+const all_articles = $("#article_feed").children();
+//- const article_ids = _.map(all_articles, (article) => { 
+//- 	return article.id.replace(/-/g, "_")
+//- })	
+
+console.log("Articles: ")
+console.log(all_articles)
+
+function update_search_box() {
+	var searchstring = $('#search_box');
+	searchstring.focus();
+	
+	console.log(searchstring.val())
+
+	// If query empty, default to listing all the articles
+	if (searchstring.val().trim() == ""){
+		if (feed.children().length != all_articles.length){
+			feed.children().detach()
+			feed.append(all_articles);
+		}
+	} else {
+		var res = search_index.search(searchstring.val(), {});
+		const found_slugs = _.map(res, (doc) => { return doc.ref; });
+		console.log(found_slugs)
+		const ordered_articles = _.map(found_slugs, (slug) => {
+			return _.find(all_articles, (article) => { return article.id.replace(/-/g, "_") == slug.replace(/-/g, "_") });
+		});
+		feed.children().detach()
+		_.forEach(ordered_articles, (arr) => {
+			feed.append(arr);
+			feed.append(document.createElement("br"))
+		});
+	}
+}
+
+$( "#search_box" ).keyup(update_search_box);</script></body><footer class="fixed text-center bottom-0 bg-gray-100 border w-full"><span>&copy; Copyright Matt Piekenbrock 2022. Proudly powered by </span><a href="https://www.11ty.dev/">Eleventy.</a><script>$(document).ready(function() {
+  $("[data-link]").click(function() {
+    window.location.href = $(this).attr("data-link");
+    return false;
+  });
+});</script></footer></html>

@@ -1,0 +1,92 @@
+<html lang="en-US"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta http-equiv="X-UA-Compatible" content="IE=Edge"/><link type="text/css" href="/css/styles.css" rel="stylesheet"/><link type="text/css" href="/css/fontawesome.min.css" rel="stylesheet"/><link rel="stylesheet" href="/css/github.min.css"/><link href="/css/prism-one-light.css" rel="stylesheet"/><link rel="stylesheet" href="https://unpkg.com/katex@latest/dist/katex.min.css"/><link href="https://fonts.googleapis.com/css?family=Nunito:400,700&amp;display=swap" rel="stylesheet"/></head><body class="w-full"><ul class="flex border-b mt-2 fixed-top mx-2"><a class="bg-white inline-block border-l border-t border-r rounded-t py-4 px-4 text-black font-semibold active_text-orange" id="home_tab" href="/">Home</a><a class="bg-white inline-block border-l border-t border-r rounded-t py-4 px-4 text-black font-semibold active_text-orange" id="about_tab" href="/about">About</a><div class="mt-0 ml-auto relative box-border mb-4 w-5/12"><input class="bg-white border-l rounded border appearance-none leading-normal pl-4 pr-8 w-full h-full outline-none my-2" id="search_box" placeholder="Search..." type="search" name="search"/><button class="fa fa-search absolute right-0 top-2 h-full my-2 mr-6" aria-hidden="true" style="align-middle"></button></div></ul><div class="mx-2 flex border mb-6 border-t-0"><div class="markdown container px-16 items-center w-full max-w-screen-xl mx-auto prose prose-pre_p-2 prose-pre_border-2"><h1 class="my-4"> Getters and Setters are DEAD</h1><small class="text-orange my-0">Author: </small><small class="text-gray my-0">Matt Piekenbrock</small><br/><small class="text-orange my-0">Date:</small><small class="text-gray my-0"> January 31, 2017</small><div class="w-full" id="page_content"> </div><h2>Getters and Setters are DEAD</h2>
+<p>I remember learning that getter setter pattern vividly. The original idea of the getter / setter pattern was to keep the implementation hidden from the user as much as possible, instead only expose the minimal interface needed to chaneg the member field value.</p>
+<p>Said another way, getters and setters are aimed at providing encapsulation or information hiding.</p>
+<p>A typical use-case is that a getter would provide access to stored member type and a setting would allow mutation. By encapsulating the read/write functionality as functions, one could have finer control over the object properties are used.</p>
+<p>For example, one might provide a <code>read</code> function that returns a property, but only if the property is valid, otherwise they might throw an exception.</p>
+<p>Another example illustrates the use of setters--by moving the assignment to a function that you control, one can do stricter argument checking, thereby ensuring the validitiy of the corresponding object instance.</p>
+<p>The motivation behind getters/setters is sound: encapsulation is a good thing. However, far too often what ends up happening (especially in the beginner-level Java code) is that the getters and setters get misused. They can actually hinder the expressiveness of code and make it more difficult for people to actually use their class. Here's an example of what <em>not</em> to do:</p>
+<pre class="language-cpp"><code class="language-cpp"><span class="token keyword">class</span> <span class="token class-name">PointXYZ</span> <span class="token punctuation">{</span><br>    <span class="token keyword">float</span> _x<span class="token punctuation">,</span> _y<span class="token punctuation">,</span> _z<span class="token punctuation">;</span><br><span class="token keyword">public</span><span class="token operator">:</span>     <br>    <span class="token keyword">float</span> <span class="token function">get_x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token keyword">return</span><span class="token punctuation">(</span>_x<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><br>    <span class="token keyword">void</span> <span class="token function">set_x</span><span class="token punctuation">(</span><span class="token keyword">float</span> x<span class="token punctuation">)</span><span class="token punctuation">{</span> _x <span class="token operator">=</span> x<span class="token punctuation">;</span> <span class="token punctuation">}</span><br>    <span class="token keyword">float</span> <span class="token function">get_y</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token keyword">return</span><span class="token punctuation">(</span>_y<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><br>    <span class="token keyword">void</span> <span class="token function">set_y</span><span class="token punctuation">(</span><span class="token keyword">float</span> y<span class="token punctuation">)</span><span class="token punctuation">{</span> _y <span class="token operator">=</span> y<span class="token punctuation">;</span> <span class="token punctuation">}</span><br>    <span class="token keyword">float</span> <span class="token function">get_z</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token keyword">return</span><span class="token punctuation">(</span>_z<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><br>    <span class="token keyword">void</span> <span class="token function">set_z</span><span class="token punctuation">(</span><span class="token keyword">float</span> z<span class="token punctuation">)</span><span class="token punctuation">{</span> _z <span class="token operator">=</span> z<span class="token punctuation">;</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre>
+<p>As you can see, this is a very simple class and we've following the getter setter pattern to the tee. But a much simpler and better solution is to just treat it as POD type</p>
+<pre class="language-cpp"><code class="language-cpp"><span class="token keyword">struct</span> <span class="token class-name">PointXYZ</span> <span class="token punctuation">{</span><br>  <span class="token keyword">float</span> x<span class="token punctuation">,</span>y<span class="token punctuation">,</span>z<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+<p>No fancy constructors,</p>
+<p>The problem, though, is that this is ugly and not necessary at all: there are no restrictions imposed on the internal field values.</p>
+<pre class="language-cpp"><code class="language-cpp"><span class="token keyword">template</span><span class="token operator">&lt;</span> <span class="token keyword">typename</span> <span class="token class-name">T</span> <span class="token operator">></span><br><span class="token keyword">struct</span> <span class="token class-name">Property</span> <span class="token punctuation">{</span><br>    T value<span class="token punctuation">;</span><br>    <span class="token function">Property</span><span class="token punctuation">(</span><span class="token keyword">const</span> T initial_value<span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token function">value</span><span class="token punctuation">(</span>initial_value<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token punctuation">}</span><br>    <span class="token keyword">operator</span> <span class="token function">T</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> value<span class="token punctuation">;</span> <span class="token punctuation">}</span><br>    T <span class="token keyword">operator</span><span class="token operator">=</span> <span class="token punctuation">(</span>T newValue<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> value <span class="token operator">=</span> newValue<span class="token punctuation">;</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<pre class="language-cpp"><code class="language-cpp"><span class="token keyword">struct</span> <span class="token class-name">SetosaPlant</span> <span class="token punctuation">{</span><br>    Property<span class="token operator">&lt;</span> <span class="token keyword">int</span> <span class="token operator">></span> sepal_length<span class="token punctuation">;</span> <br>    Property<span class="token operator">&lt;</span> <span class="token keyword">int</span> <span class="token operator">></span> sepal_width<span class="token punctuation">;</span> <br><span class="token punctuation">}</span><br><br><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><br>    <span class="token keyword">auto</span> plant <span class="token operator">=</span> <span class="token function">SetosaPlant</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>    plant<span class="token punctuation">.</span>sepal_length <span class="token operator">=</span> <span class="token number">5</span><span class="token punctuation">;</span><br>    plant<span class="token punctuation">.</span>sepal_width <span class="token operator">=</span> plant<span class="token punctuation">.</span>sepal_length<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+<pre class="language-cpp"><code class="language-cpp"><span class="token keyword">class</span> <span class="token class-name">SetosaPlant</span> <span class="token punctuation">{</span><br>    <span class="token keyword">public</span><span class="token operator">:</span> <br>    <span class="token comment">// Replace w/ std::optional </span><br>    <br>    <span class="token keyword">int</span><span class="token operator">&amp;</span> <span class="token function">sepal_length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>      <span class="token keyword">return</span><span class="token punctuation">(</span>_sepal_length<span class="token punctuation">)</span><span class="token punctuation">;</span><br>    <span class="token punctuation">}</span> <br>    SetosaPlant<span class="token operator">&amp;</span> <span class="token function">sepal_length</span><span class="token punctuation">(</span>T new_value<span class="token punctuation">)</span> <span class="token punctuation">{</span> <br>      value <span class="token operator">=</span> new_value<span class="token punctuation">;</span><br>      <span class="token keyword">return</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>    <span class="token punctuation">}</span><br>   <br>    <span class="token keyword">private</span><span class="token operator">:</span> <br>        <span class="token keyword">int</span> _sepal_length<span class="token punctuation">;</span> <br>        <span class="token keyword">int</span> _sepal_width<span class="token punctuation">;</span> <br><span class="token punctuation">}</span><br><br><br><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><br>    <span class="token keyword">auto</span> plant <span class="token operator">=</span> <span class="token function">SetosaPlant</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>    plant<br>        <span class="token punctuation">.</span><span class="token function">sepal_length</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><br>        <span class="token punctuation">.</span><span class="token function">sepal_width</span><span class="token punctuation">(</span>plant<span class="token punctuation">.</span><span class="token function">sepal_length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+<br/></div></div><script src="/js/jquery.min.js"></script><script src="/js/elasticlunr.min.js"></script><script src="/js/lodash.min.js"></script><script>document.addEventListener('DOMContentLoaded', (event) => {
+  document.querySelectorAll('pre code').forEach((block) => {
+    console.log("here");
+    //hljs.highlightBlock(block);
+  });
+});</script><script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.js" integrity="sha256-2JRzNxMJiS0aHOJjG+liqsEOuBb6++9cY4dSOyiijX4=" crossorigin="anonymous"></script><script>const tabs = ["home_tab", "about_tab"];
+tabs.forEach((tab_id) => {
+	var tab_el = document.getElementById(tab_id)
+	console.log(window.location.pathname.replace("/", ""))
+	console.log(tab_el.pathname.replace("/", ""))
+	if (window.location.pathname == tab_el.pathname){
+		console.log("orange")
+		tab_el.classList.remove("text-black")
+		tab_el.classList.add("text-orange")
+	} else {
+		console.log("black")
+		tab_el.classList.remove("text-orange")
+		tab_el.classList.add("text-black")
+	}
+})</script><script>var search_index, doc_keys;
+
+const apply_slugs = (slugs, display_status) => {
+	_.forEach(slugs, (id) => { if (id){ $("#"+id).css("display", display_status); } });
+};
+
+$.getJSON('/data/cached_index.json', function(data) {
+	search_index = elasticlunr.Index.load(data);
+	doc_keys = _.map(search_index.documentStore.docs, (doc) => {
+		return (doc.slug ? doc.slug : "");
+	});
+	console.log("Search index")
+	console.log(search_index);
+});
+
+
+const feed = $("#article_feed");
+const all_articles = $("#article_feed").children();
+//- const article_ids = _.map(all_articles, (article) => { 
+//- 	return article.id.replace(/-/g, "_")
+//- })	
+
+console.log("Articles: ")
+console.log(all_articles)
+
+function update_search_box() {
+	var searchstring = $('#search_box');
+	searchstring.focus();
+	
+	console.log(searchstring.val())
+
+	// If query empty, default to listing all the articles
+	if (searchstring.val().trim() == ""){
+		if (feed.children().length != all_articles.length){
+			feed.children().detach()
+			feed.append(all_articles);
+		}
+	} else {
+		var res = search_index.search(searchstring.val(), {});
+		const found_slugs = _.map(res, (doc) => { return doc.ref; });
+		console.log(found_slugs)
+		const ordered_articles = _.map(found_slugs, (slug) => {
+			return _.find(all_articles, (article) => { return article.id.replace(/-/g, "_") == slug.replace(/-/g, "_") });
+		});
+		feed.children().detach()
+		_.forEach(ordered_articles, (arr) => {
+			feed.append(arr);
+			feed.append(document.createElement("br"))
+		});
+	}
+}
+
+$( "#search_box" ).keyup(update_search_box);</script></body><footer class="fixed text-center bottom-0 bg-gray-100 border w-full"><span>&copy; Copyright Matt Piekenbrock 2022. Proudly powered by </span><a href="https://www.11ty.dev/">Eleventy.</a><script>$(document).ready(function() {
+  $("[data-link]").click(function() {
+    window.location.href = $(this).attr("data-link");
+    return false;
+  });
+});</script></footer></html>
