@@ -132,7 +132,7 @@ module.exports = function(eleventyConfig) {
 			input: "content",
 			includes: "../_includes", 
 			data: "../_data",
-			output: "_site" 
+			output: "docs" // needed for GH pgaes
 		}, 
 		passthroughFileCopy: true
 	};
