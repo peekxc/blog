@@ -10,18 +10,18 @@ include_toc: true
 layout: single.pug
 ---
 
-This is a blog by me, Matt Piekenbrock. My background and research interest are listed on my [homepage](https://mattpiekenbrock.com) and my software projects are primarily listed on my [github](https://github.com/peekxc). 
+<div class="text-center">
+<blockquote class="not-prose">
+  <span style="font-size: 1.25rem;"> I'm sure he persuaded me that statistics is more than a subset of mathematics </span>
+</blockquote>
+<span class="text-center"> - John Hartigan ['A Conversation with John Hartigan', Daniel Barry, 2005] </span>
+</div>
 
-The topics of this blog span many topics, typically in the area of programming, math, algorithms, data analysis, and graphics/visualization. Everything on here is my own opinion and does not reflect the views of any other person, organization, or entity I'm associated with. 
+This is a blog by me, Matt Piekenbrock. My background and research interest are listed on my [homepage](https://mattpiekenbrock.com) and my software projects are primarily listed on my [github](https://github.com/peekxc). The topics of this blog span many topics, typically in the area of programming, math, algorithms, data analysis, and graphics/visualization. 
+
+Everything on here is my own opinion and does not reflect the views of any other person, organization, or entity I'm associated with. 
 
 My research interests lie mostly at the intersection between Topological Data Analysis (TDA), data science, and scientific computing. I love learning about open-ended areas of learning theory and data analysis, things like unsupervised learning, clustering, dimensionality reduction, estimation theory, and so on. I'm also a [modern C++](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#abstract) enthusiast, and believer in [functional programming](https://en.wikipedia.org/wiki/Functional_programming), and a fervent supporter of open source software. 
-
-In summary, my interests fundamentally align with that of John Hartigan: 
-
-> "*I'm sure he persuaded me that statistics is more than a subset of mathematics*"
-> <span class="float-right"> - John Hartigan ['A Conversation with John Hartigan', Daniel Barry, 2005]</span>
-
-This was his response when asked if anyone had a major influence on his attitude towards statistics. John Tukey was the influencer here. 
 
 <!-- https://www.pingdom.com/blog/webpages-are-getting-larger-every-year-and-heres-why-it-matters/ -->
 
@@ -62,12 +62,11 @@ But I genuinely believe the field of P&S truly contains the tools and knowledge 
 
 ## People and things that inspire me
 
-<blockquote> 
+<!-- <blockquote> 
 The most incomprehensible thing about the world is that it is comprehensible.
 <br/> 
 <cite class="mb-1 text-sm italic font-bold text-gray"> - Einstein [Physics and Reality, 1936]</cite>
-</blockquote> 
-
+</blockquote>  -->
 
 Some people have inspired me to do various things. They are recorded here for posterity, in hopes that their work continues to inspire. 
 

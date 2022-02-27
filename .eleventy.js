@@ -44,6 +44,7 @@ module.exports = function(eleventyConfig) {
 	eleventyConfig.addPassthroughCopy({ "css": "css" });
 	eleventyConfig.addPassthroughCopy({ "js": "js" });
 	eleventyConfig.addPassthroughCopy({ "data": "data" });
+	eleventyConfig.addPassthroughCopy({ "images": "images" });
 	
 	// Set markdown library
 	// See: https://dev.to/matthewtole/eleventy-markdown-and-tailwind-css-14f8
