@@ -63,6 +63,12 @@ module.exports = function(eleventyConfig) {
 	// md.use(mapping);
 	eleventyConfig.setLibrary('md', md);
 
+	// Let pug use filter! this is needed for pathPrefix url!	
+	global.filters = eleventyConfig.javascriptFunctions; // magic happens here
+	eleventyConfig.setPugOptions({ // and here
+			globals: ['filters']
+	});
+
 	// TODO: add filters to enable javascript functions that e.g. summarize text
 	// eleventyConfig.addFilter("format_date", function(dateIn) {
 	// 	// return moment(dateIn).tz('GMT').format('YYYY MMMM DD, dddd, HH:MM:SS z');

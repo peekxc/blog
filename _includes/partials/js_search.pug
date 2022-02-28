@@ -5,7 +5,7 @@ script.
 		_.forEach(slugs, (id) => { if (id){ $("#"+id).css("display", display_status); } });
 	};
 
-	$.getJSON('data/cached_index.json', function(data) {
+	$.getJSON('/blog/data/cached_index.json', function(data) {
 		search_index = elasticlunr.Index.load(data);
 		doc_keys = _.map(search_index.documentStore.docs, (doc) => {
 			return (doc.slug ? doc.slug : "");

@@ -71,8 +71,8 @@ Indeed, this was one of they key observations that inspired the [rotating calipe
 
 Here's two pictures to illustrate the intuition behind the rotating calipers method, borrowed from [this great blog post](https://geidav.wordpress.com/tag/rotating-calipers/). I recommend checking out said post if you're curious how it works. The left picture shows a (non-convex) polygon, and the right-side shows the minimum bounding box around different sets of vertices on the convex hull. Notice that $D(X)$ can be derived from these as well, and that these boxes only intersect points on the convex hull itself.
 <div class="flex flex-row">
-  <img class="mx-auto" src="/images/rot_calipers1.png" alt="P1" style="height: 20em;"> </img>
-  <img class="mx-auto" src="/images/rot_calipers2.png" alt="P2" style="height: 20em;"> </img>
+  <img class="mx-auto" src="/blog/images/rot_calipers1.png" alt="P1" style="height: 20em;"> </img>
+  <img class="mx-auto" src="/blog/images/rot_calipers2.png" alt="P2" style="height: 20em;"> </img>
 </div> 
 
 Since the convex hull can be computed in $O(n \log n)$ time, e.g. using [SciPys port of QHull](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.ConvexHull.html), the rotating calipers method yields an efficient method for $d = 2$. 
@@ -156,9 +156,9 @@ $$ B[x, x'] = B\left( \frac{x + x'}{2}, \frac{d_X(x, x')}{2} \right ) $$
   
 
 <div class="flex flex-row">
-  <img class="mx-auto" src="/images/p1.png" alt="P1" style="width: 33% !important;"> </img>
-  <img class="mx-auto" src="/images/p2.png" alt="P2" style="width: 33% !important;"> </img>
-  <img class="mx-auto" src="/images/p3.png" alt="P3" style="width: 33% !important;"> </img>
+  <img class="mx-auto" src="/blog/images/p1.png" alt="P1" style="width: 33% !important;"> </img>
+  <img class="mx-auto" src="/blog/images/p2.png" alt="P2" style="width: 33% !important;"> </img>
+  <img class="mx-auto" src="/blog/images/p3.png" alt="P3" style="width: 33% !important;"> </img>
 </div> 
 Let's see what each of these observations afford us. 
 
