@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 html(lang="en-US")
 	head
 		include ./partials/header.pug
@@ -21,6 +22,12 @@ html(lang="en-US")
 		//- script(src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.js" integrity="sha256-2JRzNxMJiS0aHOJjG+liqsEOuBb6++9cY4dSOyiijX4=" crossorigin="anonymous")
 		//- script(src="/js/highlight.min.js")
 		//- script hljs.initHighlightingOnLoad()		
+		script. 
+			//- Reset zoom
+			var scale = 'scale(1)';
+			document.body.style.webkitTransform = scale;   
+			document.body.style.msTransform = scale;
+			document.body.style.transform = scale;
 		script.
 			const tabs = ["home_tab", "about_tab"];
 			tabs.forEach((tab_id) => {
