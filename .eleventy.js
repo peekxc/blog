@@ -135,6 +135,7 @@ module.exports = function(eleventyConfig) {
 			data: "../_data",
 			output: "docs" // needed for GH pgaes
 		}, 
-		passthroughFileCopy: true
+		passthroughFileCopy: true,
+		pathPrefix: "/blog"
 	};
 };
