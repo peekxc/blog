@@ -197,8 +197,11 @@ This observation is essentially a more refined version of the convex hull observ
 
 Both the convex hull $\mathcal{C}(X)$ and the set $H$ of double-normals are shown in the right-most image above. The black lines traverse the boundary of $\mathcal{C}(X)$, the green line connects the maximal pair whose distance yields the diameter, and the orange lines demarcate other double-normals. Observe $H \subset \mathcal{C}(X)$, thus if we can find double-normals quickly, we may be able to find the diameter quickly as well. 
 
+## Conclusions: Part I 
 
-<h1 id="#references"> References </h1>
+Amazingly, the short list of ideas and observations described so far are all that is needed to produce an efficient algorithm for computing the diameter of a point set in $d$ dimensions in $\approx O(nh)$ time. The algorithm is simple, but does require more of an explanation than given so far—I defer its full description until Part II, which I will cover in my next posting. 
+
+<h2 id="#references"> References </h1>
 
 1. Malandain, Grégoire, and Jean-Daniel Boissonnat. "Computing the diameter of a point set." International Journal of Computational Geometry & Applications 12.06 (2002): 489-509.
 
