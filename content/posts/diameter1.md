@@ -22,11 +22,10 @@ More generally, one may start with an arbitrary metric space $(X, d_X)$ and use 
 
 Knowing the diameter of $X$ conveys a few things about the point set. Some examples:
 
-1. All points in $X$ lie in some [enclosing sphere](https://en.wikipedia.org/wiki/Bounding_sphere) with diameter $D(X)$
-2. The [smallest such enclosing sphere](https://en.wikipedia.org/wiki/Smallest-circle_problem) has radius $R(X)$ satisfying $R(X) \leq \frac{1}{2}D(X) \sqrt{\frac{d}{2(d+1)}}$ ([Jung's Theorem](https://en.wikipedia.org/wiki/Jung%27s_theorem))
-3. $\frac{1}{n} D(X) \leq \epsilon_\ast(X)$ where $\epsilon_\ast(X)$ is twice the minimum radius needed to ensure $\epsilon$-neighbor graph $N_\epsilon(X)$ is connected. 
-4. Let $A, B \subseteq X$. Then $D(A \cup B) \leq D(A) + D(B) + d_H(A, B)$, where $d_H(A, B)$ is the Hausdorff distance 
-5. Let $(X, d_X)$ and $(Y, d_Y)$ denote two metric spaces. Then 
+1. The [smallest enclosing sphere](https://en.wikipedia.org/wiki/Smallest-circle_problem) has radius $R(X)$ satisfying $R(X) \leq \frac{1}{2}D(X) \sqrt{\frac{d}{2(d+1)}}$ ([Jung's Theorem](https://en.wikipedia.org/wiki/Jung%27s_theorem))
+2. $\frac{1}{n} D(X) \leq \epsilon_\ast(X)$ where $\epsilon_\ast(X)$ is twice the minimum radius needed to ensure $\epsilon$-neighbor graph $N_\epsilon(X)$ is connected. 
+3. Let $A, B \subseteq X$. Then $D(A \cup B) \leq D(A) + D(B) + d_H(A, B)$, where $d_H(A, B)$ is the Hausdorff distance 
+4. Let $(X, d_X)$ and $(Y, d_Y)$ denote two metric spaces. Then 
    $$ \frac{1}{2} \lvert D(X) - D(Y)\rvert \leq d_{GH}(X, Y) \leq \frac{1}{2}\max\{D(X), D(Y)\}$$
    where $d_{GH}$ is the Gromov-Hausdorff distance ( [introduction video](https://www.youtube.com/watch?v=tvbkSt_QxnE) if you're curious )
 
