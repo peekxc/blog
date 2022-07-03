@@ -43,9 +43,9 @@ A _dynamic array_ is an _array_ that also supports insertion and deletion of ele
 
 Suppose you have a [0-arity](https://en.wikipedia.org/wiki/Arity) function $f$ generating data dynamically---perhaps a [closure](https://en.wikipedia.org/wiki/Closure_(computer_programming))---whose output type $T$ you know. Suppose further you know that you know $f$ is _valid_ if and only if $f()$ is positive; otherwise $f() = 0$ signals that $f$ is no longer generating data. This is actually a simple though sub-optimal way to implement the [iterator pattern](https://en.wikipedia.org/wiki/Iterator_pattern).
 
-How can one efficiently store data streaming in through $f$?
+How can one efficiently store the data streaming in through $f$?
 
-Because you know the type $T$, dynamic arrays are a good choice. The prototypical [STL](https://en.wikipedia.org/wiki/Standard_Template_Library)-container for representing dynamic arrays is the `std::vector` class. Suppose $T = \text{int}$ for simplicity.
+Dynamic arrays are a good choice here because 1. you don't know how many items there will be ahead of time and 2. you know the type $T$ and thus you know each elements size. The prototypical [STL](https://en.wikipedia.org/wiki/Standard_Template_Library)-container for representing dynamic arrays is the `std::vector` class. Suppose $T = \text{int}$ for simplicity. The following might represent this data-storage process:
 
 ```cpp
 int x = 0;
@@ -57,10 +57,12 @@ while (x = f()){
 Here in the line `while(x = f())` I'm abusing the fact that assignments are valid expressions in conditionals and that integers [implicity type cast](https://en.wikipedia.org/wiki/Type_conversion) to booleans that happen match the condition of the problem. This is sometimes an [anti-pattern](https://en.wikipedia.org/wiki/Anti-pattern), but I think it's fine (see also [Yoda conditions](https://en.wikipedia.org/wiki/Yoda_conditions)).
 
 What's happening here under the hood? Assuming `v` is initialized to an empty vector ([not reality](https://stackoverflow.com/questions/12271017/initial-capacity-of-vector-in-c)), the first call to `push_back()` will do the following:
+
 - Copy `v`'s contents, if any, to a buffer
 - [Free](https://en.cppreference.com/w/c/memory/free) the memory held by `v`
 - Re-allocate a new contiguous block of memory $m$ of size $2n*\mathrm{sizeof}(\text{int})$
 - Copy the contents from the buffer to $m$
+  
 This entire process happens whenever the [capacity](https://en.cppreference.com/w/cpp/container/vector/capacity) exceeds some power of two, $2^0, 2^1, 2^2, \dots, 2^k$. Assuming $f$ returns $N$ valid values, up to at most $2^{\lceil \log(N)/\log(2)) \rceil} -1$ times. All other insertions to the end take $O(1)$. Thus, the number of insertions which take $O(1)$ time increases exponentially, making the number $O(n)$ re-allocations exceedingly rare as $n \to \infty$. This is what is meant by _amortized time_.
 
 Strictly speaking, re-allocations need not _always_ be performed when $n$ exceeds powers of $2$. In general, if $T(n)$ is the worst-case running time for a sequence of $n$ computations, then the amortized time for each operation is $T(n)/n$, thus an operation runs in _amortized_ $O(1)$ if the operation has $\theta(1)$ complexity. Since vector-reallocation takes worst-case $O(n)$, a sequence of $n+1$ _append_ operations to an array of size $n$ each has complexity $(n \theta(1) + T(n))/(n + 1) = \theta(1)$. In the array insertion case, as long as the frequency with which the allocator chooses to perform the re-allocation is inversely proportional to a superpolynomial, then one can say the insertion operation is amortized constant.
